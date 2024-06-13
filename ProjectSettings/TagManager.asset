@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Player
   - Enemy
-  - 
+  - Sword
   - 
   - 
   - 
@@ -44,7 +44,7 @@ TagManager:
   - name: Background
     uniqueID: 1590375515
     locked: 0
-  - name: ground
+  - name: Ground
     uniqueID: 815284055
     locked: 0
   - name: Enemy

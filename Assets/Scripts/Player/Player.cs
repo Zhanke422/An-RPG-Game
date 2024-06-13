@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Player : Entity
@@ -16,14 +17,16 @@ public class Player : Entity
     [Header("Move info")]
     public float moveSpeed;
     public float jumpForce;
+    public float swordReturnImpact;
 
 
     [Header("Dash info")]
-    [SerializeField] private float dashCooldown;
-    private float dashUsageTimer;
     public float dashSpeed;
     public float dashDuration;
     public float dashDir { get; private set; }
+
+    public SkillManager skill {  get; private set; }
+    public GameObject sword {  get; private set; }
 
     #region States
     public PlayerStateMachine stateMachine { get; private set; }
@@ -38,6 +41,9 @@ public class Player : Entity
 
     public PlayerPrimaryAttackState primaryAttackState { get; private set; }
     public PlayerCounterAttackState counterAttackState { get; private set; }
+
+    public PlayerAimSwordState aimSwordState { get; private set; }
+    public PlayerCatchSwordState catchSwordState { get; private set; }
 
     #endregion
 
@@ -57,11 +63,16 @@ public class Player : Entity
 
         primaryAttackState = new PlayerPrimaryAttackState(this, stateMachine, "Attack");
         counterAttackState = new PlayerCounterAttackState(this, stateMachine, "CounterAttack");
+
+        aimSwordState = new PlayerAimSwordState(this, stateMachine, "AimSword");
+        catchSwordState = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
     }
 
     protected override void Start()
     {
         base.Start();
+
+        skill = SkillManager.instance;
 
         stateMachine.Initialize(idleState);
     }
@@ -73,6 +84,17 @@ public class Player : Entity
         stateMachine.currentState.Update();
 
         CheckForDashInput();
+    }
+
+    public void AssignNewSword(GameObject _newSword)
+    {
+        sword = _newSword;
+    }
+
+    public void CatchTheSword()
+    {
+        stateMachine.ChangeState(catchSwordState);
+        Destroy(sword);
     }
 
     public IEnumerator BusyFor(float _seconds)
@@ -92,11 +114,9 @@ public class Player : Entity
         {
             return;
         }
-        dashUsageTimer -= Time.deltaTime;
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && dashUsageTimer < 0)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && SkillManager.instance.dash.CanUseSkill())
         {
-            dashUsageTimer = dashCooldown;
 
             dashDir = Input.GetAxisRaw("Horizontal");
 
