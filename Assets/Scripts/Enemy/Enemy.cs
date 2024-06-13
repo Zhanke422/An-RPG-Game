@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
+    [Header("Stunned info")]
+    public float stunDuration;
+    public Vector2 stunDirection;
+    protected bool canBeStunned;
+    [SerializeField] protected GameObject counterImage;
+
     [Header("Move info")]
     public float moveSpeed;
     public float idleTime;
@@ -31,6 +37,28 @@ public class Enemy : Entity
 
         stateMachine.currentState.Update();
 
+    }
+
+    public virtual void OpenCounterAttackWindow()
+    {
+        canBeStunned = true;
+        counterImage.SetActive(true);
+    }
+
+    public virtual void CloseConunterAttackWindow()
+    {
+        canBeStunned = false;
+        counterImage.SetActive(false);
+    }
+
+    public virtual bool CanBeStunned()
+    {
+        if (canBeStunned)
+        {
+            CloseConunterAttackWindow();
+            return true;
+        }
+        return false;
     }
 
     public virtual void AnimationFinishTrigger() => stateMachine.currentState.AnimationFinishTrigger();
