@@ -47,7 +47,7 @@ public class Crystal_Skill_Controller : MonoBehaviour
             FinishCrystal();
         }
 
-        if (canMove)
+        if (canMove && closestTarget)
         {
             transform.position = Vector2.MoveTowards(transform.position, closestTarget.position, moveSpeed * Time.deltaTime);
 
