@@ -25,6 +25,7 @@ public class Enemy : Entity
     [SerializeField] protected LayerMask whatIsPlayer;
 
     public EnemyStateMachine stateMachine {  get; private set; }
+    public string lastAnimBoolName {  get; private set; }
 
     protected override void Awake()
     {
@@ -42,6 +43,23 @@ public class Enemy : Entity
 
     }
 
+    public virtual void AssignLastAnimName(string _animBoolName) => lastAnimBoolName = _animBoolName;
+
+    public override void SlowEntity(float _slowPercentage, float _slowDuration)
+    {
+        moveSpeed *= (1 - _slowPercentage);
+        anim.speed *= (1 - _slowPercentage);
+
+        Invoke("ReturnDefaultSpeed", _slowDuration);
+    }
+
+    protected override void ReturnDefaultSpeed()
+    {
+        base.ReturnDefaultSpeed();
+
+        moveSpeed = defaultMoveSpeed;
+    }
+
     public virtual void FreeTime(bool _timeFrozen)
     {
         if (_timeFrozen)
@@ -56,7 +74,7 @@ public class Enemy : Entity
         }
     }
 
-    protected virtual IEnumerator FreezeTimFor(float _seconds)
+    protected virtual IEnumerator FreezeTimeFor(float _seconds)
     {
         FreeTime(true);
 
