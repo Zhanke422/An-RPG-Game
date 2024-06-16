@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
 
 public class PlayerPrimaryAttackState : PlayerState
 {
-    private int comboCounter;
+    public int comboCounter { get; private set; }
 
     private float lastTimeAttacked;
     private float comboWindow = 2;
@@ -25,7 +22,7 @@ public class PlayerPrimaryAttackState : PlayerState
 
         float attackDir = player.facingDir;
 
-        if(xInput != 0)
+        if (xInput != 0)
         {
             attackDir = xInput;
         }
@@ -49,7 +46,7 @@ public class PlayerPrimaryAttackState : PlayerState
 
     public override void Update()
     {
-        if(stateTimer < 0)
+        if (stateTimer < 0)
         {
             player.SetZeroVelocity();
         }

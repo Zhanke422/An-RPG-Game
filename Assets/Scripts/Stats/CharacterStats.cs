@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
@@ -45,7 +46,7 @@ public class CharacterStats : MonoBehaviour
     public int currentHealth;
 
     public System.Action onHealthChanged;
-    protected bool isDead;
+    public bool isDead {  get; private set; }
 
     // Start is called before the first frame update
     protected virtual void Start()
@@ -82,6 +83,19 @@ public class CharacterStats : MonoBehaviour
         }
     }
 
+    public virtual void IncreaseStatBy(int _modifier, float _duration, Stat _statToModify)
+    {
+        StartCoroutine(StarModCoroutine(_modifier, _duration, _statToModify));
+    }
+
+    private IEnumerator StarModCoroutine(int _modifier, float _duration, Stat _statToModify)
+    {
+        _statToModify.AddModifier(_modifier);
+
+        yield return new WaitForSeconds(_duration);
+
+        _statToModify.RemoveModifier(_modifier);
+    }
     
 
     public virtual void DoDamage(CharacterStats _targetStats)
@@ -99,7 +113,7 @@ public class CharacterStats : MonoBehaviour
         totalDamage = CheckTargetArmor(_targetStats, totalDamage);
         _targetStats.TakeDamage(totalDamage);
         
-        //DoMagicalDamage(_targetStats);
+        DoMagicalDamage(_targetStats); // remove if don't wnat to apply magic hit on primary attack
     }
 
     #region Magical damage and ailments
@@ -285,6 +299,21 @@ public class CharacterStats : MonoBehaviour
         }
 
 
+    }
+
+    public virtual void IncreaseHealthBy(int _amount)
+    {
+        currentHealth += _amount;
+
+        if (currentHealth > GetMaxHealthValue())
+        {
+            currentHealth = GetMaxHealthValue();
+        }
+
+        if(onHealthChanged != null)
+        {
+            onHealthChanged();
+        }
     }
 
     protected virtual void DecreaseHealthBy(int _damage)

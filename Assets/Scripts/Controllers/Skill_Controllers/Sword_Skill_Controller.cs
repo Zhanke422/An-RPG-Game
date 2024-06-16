@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class Sword_Skill_Controller : MonoBehaviour
@@ -52,13 +52,13 @@ public class Sword_Skill_Controller : MonoBehaviour
     public void SetupSword(Vector2 _dir, float _gravityScale, Player _player, float _freeTimeDuation, float _returnSpeed)
     {
         player = _player;
-        freezeTimeDuration = _freeTimeDuation; 
+        freezeTimeDuration = _freeTimeDuation;
         returnSpeed = _returnSpeed;
 
         rb.velocity = _dir;
         rb.gravityScale = _gravityScale;
 
-        if(pierceAmount <= 0)
+        if (pierceAmount <= 0)
             anim.SetBool("Rotation", true);
 
         Invoke("DestroyMe", 7);
@@ -150,6 +150,7 @@ public class Sword_Skill_Controller : MonoBehaviour
                         if (hit.GetComponent<Enemy>() != null)
                         {
                             SwordSkillDamage(hit.GetComponent<Enemy>());
+
                         }
                     }
                 }
@@ -212,7 +213,12 @@ public class Sword_Skill_Controller : MonoBehaviour
     private void SwordSkillDamage(Enemy enemy)
     {
         player.stats.DoDamage(enemy.GetComponent<CharacterStats>());
-        enemy.StartCoroutine("FreezeTimFor", freezeTimeDuration);
+        enemy.FreezeTimeFor(freezeTimeDuration);
+
+        ItemData_Equipment equippedAmulet = Inventory.instance.GetEquipment(EquipmentType.Amulet);
+
+        if (equippedAmulet != null)
+            equippedAmulet.Effect(enemy.transform);
     }
 
     private void SetupTargetsForBounce(Collider2D collision)
