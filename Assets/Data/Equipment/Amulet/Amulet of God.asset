@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemType: 1
   itemName: Amlet of God
-  icon: {fileID: -245851270, guid: a9ca9a41598dd2e44b125928045c518f, type: 3}
+  itemIcon: {fileID: 1501868837, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
   dropChance: 0
   equipmentType: 2
+  itemCooldown: 0
   itemEffects:
   - {fileID: 11400000, guid: 3d8942fbe486d8c449e5a38ef00c9641, type: 2}
   strength: 0

@@ -1,16 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler
+public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] Image itemImage;
-    [SerializeField] private TextMeshProUGUI itemText;
+    [SerializeField] protected Image itemImage;
+    [SerializeField] protected TextMeshProUGUI itemText;
 
+    protected UI ui;
     public InventoryItem item;
+
+    protected virtual void Start()
+    {
+        ui = GetComponentInParent<UI>();
+    }
 
     public void UpdateSlot(InventoryItem _newItem)
     {
@@ -20,7 +24,7 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler
 
         if (item != null)
         {
-            itemImage.sprite = item.data.icon;
+            itemImage.sprite = item.data.itemIcon;
 
             if (item.stackSize > 1)
             {
@@ -39,12 +43,16 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler
 
         itemImage.sprite = null;
         itemImage.color = Color.clear;
-
         itemText.text = "";
     }
 
     public virtual void OnPointerDown(PointerEventData eventData)
     {
+        if (item == null)
+            return;
+
+        ui.itemToolTip.HideTooltip();
+
         if (Input.GetKey(KeyCode.LeftControl))
         {
             Inventory.instance.RemoveItem(item.data);
@@ -52,8 +60,38 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler
         }
 
         if (item.data.itemType == ItemType.Equipment)
-        {
             Inventory.instance.EquipItem(item.data);
+
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (item == null)
+            return;
+
+        Vector2 mousePosition = Input.mousePosition;
+
+        float xOffset = 0;
+        float yOffset = 300;
+
+        if (mousePosition.x > 600)
+        {
+            xOffset -= 150;
         }
+        else
+        {
+            xOffset = 150;
+        }
+
+        ui.itemToolTip.ShowTooltip(item.data as ItemData_Equipment);
+        ui.itemToolTip.transform.position = new Vector2(mousePosition.x + xOffset, mousePosition.y + yOffset);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (item == null)
+            return;
+
+        ui.itemToolTip.HideTooltip();
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public enum EquipmentType
 {
@@ -14,8 +15,11 @@ public class ItemData_Equipment : ItemData
 {
     public EquipmentType equipmentType;
 
+    [Header("Unique effec")]
     public float itemCooldown;
     public ItemEffect[] itemEffects;
+    [TextArea]
+    public string itemEffectDescription;
 
     [Header("Major stats")]
     public int strength; // 1 point increase damage by 1 and crit. power by 1%
@@ -41,6 +45,8 @@ public class ItemData_Equipment : ItemData
 
     [Header("Craft requirements")]
     public List<InventoryItem> craftingMaterials;
+
+    private int descriptionLength;
 
     public void Effect(Transform _enemyPosition)
     {
@@ -96,5 +102,64 @@ public class ItemData_Equipment : ItemData
         playerStats.iceDamage.RemoveModifier(iceDamage);
         playerStats.lightningDamage.RemoveModifier(lightningDamage);
 
+    }
+
+    public override string GetDescription()
+    {
+        sb.Length = 0;
+        descriptionLength = 0;
+
+        AddItemDescription(strength, "Strength");
+        AddItemDescription(agility, "Agility");
+        AddItemDescription(intelligence, "Intelligence");
+        AddItemDescription(vitality, "Vitality");
+
+        AddItemDescription(damage, "Damage");
+        AddItemDescription(critChance, "Crit. Chance");
+        AddItemDescription(critPower, "Crit. Power");
+
+        AddItemDescription(health, "Health");
+        AddItemDescription(evasion, "Evasion");
+        AddItemDescription(armor, "Armor");
+        AddItemDescription(magicResistance, "Magic Resist.");
+
+        AddItemDescription(fireDamage, "Fire Damage");
+        AddItemDescription(iceDamage, "Ice Damage");
+        AddItemDescription(lightningDamage, "Lightning Damage");
+
+        if(descriptionLength < 5)
+        {
+            for(int i = 0; i < 5 - descriptionLength; i++)
+            {
+                sb.AppendLine();
+                sb.Append("");
+            }
+        }
+
+        if(itemEffectDescription.Length > 0)
+        {
+            sb.AppendLine();
+            sb.Append(itemEffectDescription);
+        }
+
+        return sb.ToString();
+    }
+
+    private void AddItemDescription(int _value, string _name)
+    {
+        if(_value != 0)
+        {
+            //if(sb.Length > 0)
+            //{
+            //    sb.AppendLine();
+            //}
+
+            if(_value > 0)
+            {
+                sb.AppendLine("+ " + _value + " " + _name);
+            }
+
+            descriptionLength++;
+        }
     }
 }
