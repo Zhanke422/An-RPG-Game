@@ -34,8 +34,8 @@ public class Inventory : MonoBehaviour
     private float lastTimeUsedFlask;
     private float lastTimeUsedArmor;
 
-    private float flaskCooldown;
-    private float armorCooldown;
+    public float flaskCooldown {  get; private set; }
+    public float armorCooldown { get; private set; }
 
 
     private void Awake()
@@ -146,6 +146,11 @@ public class Inventory : MonoBehaviour
             stashItemSlot[i].UpdateSlot(stash[i]);
         }
 
+        UpdateStatsUI();
+    }
+
+    public void UpdateStatsUI()
+    {
         for (int i = 0; i < statSlot.Length; i++) // update info of stats in character UI
         {
             statSlot[i].UpdateStatValueUI();

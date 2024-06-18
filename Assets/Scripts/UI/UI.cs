@@ -6,15 +6,22 @@ public class UI : MonoBehaviour
     [SerializeField] private GameObject skillTreeUI;
     [SerializeField] private GameObject craftUI;
     [SerializeField] private GameObject optionsUI;
+    [SerializeField] private GameObject inGameUI;
 
     public UI_SkillToolTip skillToolTip;
     public UI_ItemToolTip itemToolTip;
     public UI_StatToolTip statToolTip;
     public UI_CraftWindow craftWindow;
 
+    private void Awake()
+    {
+        // Needed! don't delete (assign events on skill tree slots before assigning events on skill scripts)
+        SwitchTo(skillTreeUI);
+    }
+
     private void Start()
     {
-        SwitchTo(null);
+        SwitchTo(inGameUI);
 
         itemToolTip.gameObject.SetActive(false);
         statToolTip.gameObject.SetActive(false);
@@ -46,7 +53,6 @@ public class UI : MonoBehaviour
         {
             transform.GetChild(i).gameObject.SetActive(false);
         }
-
         if (_menu != null)
         {
             _menu.SetActive(true);
@@ -58,8 +64,20 @@ public class UI : MonoBehaviour
         if (_menu != null && _menu.activeSelf)
         {
             _menu.SetActive(false);
+            CheckForInGameUI();
             return;
         }
         SwitchTo(_menu);
+    }
+
+    private void CheckForInGameUI()
+    {
+        //when other menu is shown, hide in-game UI, otherwise show in_game UI;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (transform.GetChild(i).gameObject.activeSelf)
+                return;
+        }
+        SwitchTo(inGameUI);
     }
 }

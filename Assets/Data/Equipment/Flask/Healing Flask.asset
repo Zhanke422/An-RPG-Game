@@ -17,9 +17,10 @@ MonoBehaviour:
   itemIcon: {fileID: 1206954855, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
   dropChance: 10.6
   equipmentType: 3
-  itemCooldown: 3
+  itemCooldown: 15
   itemEffects:
   - {fileID: 11400000, guid: 21e867d1f49dd7b459887ddd204015d4, type: 2}
+  itemEffectDescription: Heals for 30% of health (cd 15s)
   strength: 0
   agility: 0
   intelligence: 0

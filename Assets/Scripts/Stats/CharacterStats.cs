@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public enum StatsType
@@ -65,6 +64,7 @@ public class CharacterStats : MonoBehaviour
 
     public System.Action onHealthChanged;
     public bool isDead {  get; private set; }
+    public bool isVulnerable { get; private set; }
 
     // Start is called before the first frame update
     protected virtual void Start()
@@ -99,6 +99,18 @@ public class CharacterStats : MonoBehaviour
         {
             ApplyIgniteDamage();
         }
+    }
+
+    public void MakeVulnerableFor(float _duration)
+    {
+        StartCoroutine(VulnerableCoroutine(_duration));
+    }
+
+    private IEnumerator VulnerableCoroutine(float _duration)
+    {
+        isVulnerable = true;
+        yield return new WaitForSeconds(_duration);
+        isVulnerable = false;
     }
 
     public virtual void IncreaseStatBy(int _modifier, float _duration, Stat _statToModify)
@@ -336,6 +348,9 @@ public class CharacterStats : MonoBehaviour
 
     protected virtual void DecreaseHealthBy(int _damage)
     {
+        if (isVulnerable)
+            _damage = Mathf.RoundToInt(_damage * 1.1f);
+
         currentHealth -= _damage;
 
         if (onHealthChanged != null)
@@ -350,14 +365,24 @@ public class CharacterStats : MonoBehaviour
     }
 
     #region Stat calculation
-    private bool TargetCanAvoidAttack(CharacterStats _targetStats)
+    public virtual void OnEvasion()
+    {
+
+    }
+
+    protected bool TargetCanAvoidAttack(CharacterStats _targetStats)
     {
         int totalEvasion = _targetStats.evasion.GetValue() + _targetStats.agility.GetValue();
 
         if (isShocked)
             totalEvasion += 20;    
 
-        return Random.Range(0, 100) < totalEvasion;
+        if(Random.Range(0, 100) < totalEvasion)
+        {
+            _targetStats.OnEvasion();
+            return true;
+        }
+        return false;
     }
 
     private int CheckTargetResistance(CharacterStats _targetStats, int totalMagicalDamage)
@@ -368,7 +393,7 @@ public class CharacterStats : MonoBehaviour
         return totalMagicalDamage;
     }
 
-    private int CheckTargetArmor(CharacterStats _targetStats, int totalDamage)
+    protected int CheckTargetArmor(CharacterStats _targetStats, int totalDamage)
     {
         if(_targetStats.isChilled)
             totalDamage -= Mathf.RoundToInt(_targetStats.armor.GetValue() * .8f);
@@ -379,7 +404,7 @@ public class CharacterStats : MonoBehaviour
         return totalDamage;
     }
 
-    private bool CanCrit()
+    protected bool CanCrit()
     {
         int totalCriticalChance = critChance.GetValue() + agility.GetValue();
 
@@ -390,7 +415,7 @@ public class CharacterStats : MonoBehaviour
         return false;
     }
 
-    private int CalculateCriticalDamage(int _damage)
+    protected int CalculateCriticalDamage(int _damage)
     {
         float totalCritPower = (critPower.GetValue() + strength.GetValue()) * .01f; // %
 

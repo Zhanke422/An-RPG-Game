@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83c7acdd61241534a87ef83f797bb380, type: 3}
   m_Name: Thunder strike effect
   m_EditorClassIdentifier: 
+  effectDescription: Crease thunder strike on hit.
   thunderStrikePrefab: {fileID: 7390432923200947430, guid: 89cdb58574c7fb643aa1bb3b89905cfd, type: 3}
