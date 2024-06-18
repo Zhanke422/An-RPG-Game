@@ -13,6 +13,8 @@ public class UI : MonoBehaviour
     public UI_StatToolTip statToolTip;
     public UI_CraftWindow craftWindow;
 
+    [SerializeField] private bool isUIActivated;
+
     private void Awake()
     {
         // Needed! don't delete (assign events on skill tree slots before assigning events on skill scripts)
@@ -21,6 +23,8 @@ public class UI : MonoBehaviour
 
     private void Start()
     {
+        isUIActivated = false;
+
         SwitchTo(inGameUI);
 
         itemToolTip.gameObject.SetActive(false);
@@ -45,6 +49,8 @@ public class UI : MonoBehaviour
         {
             SwitchWithKeyTo(optionsUI);
         }
+
+        PauseGame();
     }
 
     public void SwitchTo(GameObject _menu)
@@ -56,6 +62,9 @@ public class UI : MonoBehaviour
         if (_menu != null)
         {
             _menu.SetActive(true);
+
+            if (_menu != inGameUI)
+                isUIActivated = true;
         }
     }
 
@@ -64,6 +73,7 @@ public class UI : MonoBehaviour
         if (_menu != null && _menu.activeSelf)
         {
             _menu.SetActive(false);
+            isUIActivated = false;
             CheckForInGameUI();
             return;
         }
@@ -79,5 +89,17 @@ public class UI : MonoBehaviour
                 return;
         }
         SwitchTo(inGameUI);
+    }
+
+    private void PauseGame()
+    {
+        if (isUIActivated)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
     }
 }

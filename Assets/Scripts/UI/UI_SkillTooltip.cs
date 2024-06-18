@@ -13,7 +13,7 @@ public class UI_SkillToolTip : UI_ToolTip
     {
         skillName.text = _skillName;
         skillText.text = _skillDescription;
-        skillCost.text = "Cost: " + _price;
+        skillCost.text = "Cost: " + _price.ToString("#,#");
 
         AdjustPosition();
 

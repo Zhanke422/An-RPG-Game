@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemType: 1
   itemName: Golden ring
-  itemIcon: {fileID: -878758905, guid: a9ca9a41598dd2e44b125928045c518f, type: 3}
+  itemIcon: {fileID: -1232294077, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
+  itemId: 53f6fb9786a363e46b51a27f5f3eac58
   dropChance: 0
   equipmentType: 2
   itemCooldown: 0

@@ -1,10 +1,11 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISaveManager
 {
     private UI ui;
     private Image skillImage;
@@ -15,11 +16,11 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] private string skillDescription;
     [SerializeField] private Color lockedSkillColor;
 
+
     public bool unlocked;
 
     [SerializeField] private UI_SkillTreeSlot[] shouldBeUnlocked;
     [SerializeField] private UI_SkillTreeSlot[] shouldBeLocked;
-
 
     private void OnValidate()
     {
@@ -37,6 +38,9 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         ui = GetComponentInParent<UI>();
 
         skillImage.color = lockedSkillColor;
+
+        if (unlocked)
+            skillImage.color = Color.white;
     }
 
     public void UnlockSkillSlot()
@@ -48,16 +52,17 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (shouldBeUnlocked[i].unlocked == false)
             {
-                Debug.Log("cannot unlock skill");
+                Debug.Log("Cannot unlock skill");
                 return;
             }
         }
 
-        for (int i = 0;i < shouldBeLocked.Length; i++)
+
+        for (int i = 0; i < shouldBeLocked.Length; i++)
         {
-            if(shouldBeLocked[i].unlocked == true)
+            if (shouldBeLocked[i].unlocked == true)
             {
-                Debug.Log("cannot unlock skill");
+                Debug.Log("Cannot unlock skill");
                 return;
             }
         }
@@ -65,7 +70,6 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         unlocked = true;
         skillImage.color = Color.white;
     }
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         ui.skillToolTip.ShowToolTip(skillDescription, skillName, skillCost);
@@ -74,5 +78,24 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerExit(PointerEventData eventData)
     {
         ui.skillToolTip.HideToolTip();
+    }
+
+    public void LoadData(GameData _data)
+    {
+        if (_data.skillTree.TryGetValue(skillName, out bool value))
+        {
+            unlocked = value;
+        }
+    }
+
+    public void SaveData(ref GameData _data)
+    {
+        if (_data.skillTree.TryGetValue(skillName, out bool value))
+        {
+            _data.skillTree.Remove(skillName);
+            _data.skillTree.Add(skillName, unlocked);
+        }
+        else
+            _data.skillTree.Add(skillName, unlocked);
     }
 }
